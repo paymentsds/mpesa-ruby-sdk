@@ -28,6 +28,18 @@ module Paysuite
       end
 
       def detect_operation(intent)
+        if intent.has_key :to
+          case data[:to]
+          when /^((00|\+)?258)?8[45][0-9]{7}$/
+            return :C2B_PAYMENT
+          when /^[0-9]{5,6}$/
+            return :B2B_PAYMENT
+          end
+
+          # Should raise an exception
+        end
+
+        # Should raise an exception
       end
     end
   end
