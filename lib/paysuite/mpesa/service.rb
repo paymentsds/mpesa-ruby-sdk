@@ -10,30 +10,31 @@ module Paysuite
       end
 
       def handle_receive(intent)
-        handle(intent)
+        handle(:C2B_PAYMENT, intent)
       end
 
       def handle_revert(intent)
-        handle(intent)
+        handle(:REVERSAL, intent)
       end
 
-      def handle_query(intent)
+      def handle_query(:QUERY_TRANSACTION_STATUS, intent)
         handle(intent)
       end
 
       private
 
       def handle(operation, intent)
-        handle(intent)
+        puts(operation)
+        puts(intent)
       end
 
       def detect_operation(intent)
-        if intent.has_key :to
+        if intent.has_key? :to
           case data[:to]
           when /^((00|\+)?258)?8[45][0-9]{7}$/
-            return :C2B_PAYMENT
+            :C2B_PAYMENT
           when /^[0-9]{5,6}$/
-            return :B2B_PAYMENT
+            :B2B_PAYMENT
           end
 
           # Should raise an exception
