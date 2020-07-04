@@ -1,39 +1,11 @@
 module Paysuite
   module MPesa
-    OPERATIONS = {
-      :C2B_PAYMENT => 
-      Paysuite::MPesa::Operation.new do |operation|
-        operation.method = 'post'
-        operation.port = ''
-        operation.path = ''
-        operation.mapping = {
-          to: '',
-          from: '',
-          amount: '',
-          reference: '',
-          transaction: ''
-        }
-        operation.validation = {
-          to: '',
-          from: '',
-          amount: '',
-          reference: '',
-          transaction: ''
-        }
-        operation.required = [
-        ]
-        operation.optional = [
-        ]
-      end
-
-      :B2C_PAYMENT =>
-      :B2B_PAYMENT => 
-      :REVERSAL =>
-      :QUERY_TRANSACTION_STATUS =>
-    }
-
     class Service
+      attr_accessor :config
+
       def initialize
+        @http_client = :client
+        @config = Configuration
       end
 
       def handle_send(intent)
@@ -49,8 +21,8 @@ module Paysuite
         handle(:REVERSAL, intent)
       end
 
-      def handle_query(:QUERY_TRANSACTION_STATUS, intent)
-        handle(intent)
+      def handle_query(intent)
+        handle(:QUERY_TRANSACTION_STATUS, ntent)
       end
 
       private
@@ -85,16 +57,15 @@ module Paysuite
 
       def detect_missing_properties(code, intent)
         operation = OPERATIONS[code]
-        missing = operation.required - intent.keys
-
+        missing = operation.requires - intent.keys
       end
 
       def detect_errors(code, intent)
         operation = OPERATIONS[code]
-          
+
         errors = []
         for key in intent.keys
-          errors.push(key) unless (intent[key]).match operation.mapping[key] 
+          errors.push(key) unless (intent[key]).match operation.mapping[key]
         end
 
         return errors
@@ -102,7 +73,7 @@ module Paysuite
 
       def fill_optional_properties(opcode, intent)
         operation = OPERATION[opcode]
-        
+
         case opcode
         when :C2B_PAYMENT
           if intent.has_key? :to and @config.service_provider_code != nil
@@ -120,15 +91,14 @@ module Paysuite
           if intent.has_key? :to and @config.service_provider_code != nil
             intent[:to] = @config.service_provider_code
           end
-        
+
           if intent.has_key? :initiator_identifier and @config.initiator_identifier != nil
             intent[:initiator_identifier] = @config.initiator_identifier
           end
-        
+
           if intent.has_key? :security_credential and @config.security_credential != nil
             intent[:security_credential] = @config.security_credential
           end
-        
         when :QUERY_TRANSACTION_STATUS
           if intent.has_key? :to and @config.service_provider_code != nil
             intent[:to] = @config.service_provider_code

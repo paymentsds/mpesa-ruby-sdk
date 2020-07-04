@@ -3,6 +3,8 @@ module Paysuite
     class Client
       def initialize
         @service = Paysuite::MPesa::Service.new
+
+        yield(@service) if block_given?
       end
 
       def send(intent)
