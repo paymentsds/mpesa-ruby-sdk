@@ -10,24 +10,24 @@ module Paysuite
 
       def handle_send(intent)
         operation = detect_operation(intent)
-        handle(operation, intent)
+        handle_request(operation, intent)
       end
 
       def handle_receive(intent)
-        handle(:C2B_PAYMENT, intent)
+        handle_request(:C2B_PAYMENT, intent)
       end
 
       def handle_revert(intent)
-        handle(:REVERSAL, intent)
+        handle_request(:REVERSAL, intent)
       end
 
       def handle_query(intent)
-        handle(:QUERY_TRANSACTION_STATUS, ntent)
+        handle_request(:QUERY_TRANSACTION_STATUS, ntent)
       end
 
       private
 
-      def handle(operation, intent)
+      def handle_request(operation, intent)
         data = fill_optional_properties(operation, intent)
 
         missing_properties = detect_missing_properties(operation, data)
@@ -36,8 +36,7 @@ module Paysuite
         errors = detect_errors(operation, data)
         return errors if errors.size == 0
 
-        puts(operation)
-        puts(intent)
+        return perform_request(opcode, intent)
       end
 
       def detect_operation(intent)
@@ -106,6 +105,25 @@ module Paysuite
         end
 
         return intent
+      end
+
+      def build_request_body
+      end
+
+      def build_request_headers
+      end
+
+      def perform_request(opcode, intent)
+        body = build_request_body(opcode, intent)
+        headers = build_request_headers(opcode, intent)
+      end
+
+      def generate_access_token
+        has_keys = @config.has_key?(:api_key) and @config.has_key?('public_key')
+        has_access_token = @config.has_key? :access_token
+
+        @config.authentication = @config.api_key + @config.public_key if has_keys
+        @config.authentication = @config.access_token if has_access_token
       end
     end
   end
