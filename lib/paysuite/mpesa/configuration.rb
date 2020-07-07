@@ -1,6 +1,6 @@
 module Paysuite
   module MPesa
-    class Configurarion
+    class Configuration
       attr_accessor :access_token
       attr_accessor :api_key
       attr_accessor :public_key
@@ -21,9 +21,9 @@ module Paysuite
 
       def generate_access_token
          has_keys = instance_variable_defined?('@api_key') and instance_variable_defined?('@public_key')
-         has_access_token = instance_valriable_defined?('@access_token')
+         has_access_token = instance_variable_defined?('@access_token')
          
-         @auth = @api_key + @public_key if has_keys           
+         @auth = "#{@api_key} #{@public_key}" if has_keys           
          @auth = @access_token if has_access_token 
       end
     end

@@ -2,7 +2,7 @@ require_relative 'lib/paysuite/mpesa/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "paysuite-mpesa"
-  spec.version       = Paysuite::Mpesa::VERSION
+  spec.version       = Paysuite::MPesa::VERSION
   spec.authors       = ["Edson Michaque"]
   spec.email         = ["edson@michaque.com"]
 
