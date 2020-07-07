@@ -108,9 +108,20 @@ module Paysuite
       end
 
       def build_request_body
+        
       end
 
       def build_request_headers
+        generate_access_token
+
+        headers = {
+          :'Authorization' => 'Bearer ' + @config.auth,
+          :'Origin' => @config.origin,
+          :'Content-Type' => 'application/json',
+          :'User-Agent' => @config.user_agent
+        }
+
+        return headers
       end
 
       def perform_request(opcode, intent)
@@ -119,11 +130,7 @@ module Paysuite
       end
 
       def generate_access_token
-        has_keys = @config.has_key?(:api_key) and @config.has_key?('public_key')
-        has_access_token = @config.has_key? :access_token
-
-        @config.authentication = @config.api_key + @config.public_key if has_keys
-        @config.authentication = @config.access_token if has_access_token
+        @config.generate_access_token
       end
     end
   end
