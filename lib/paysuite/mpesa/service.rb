@@ -68,7 +68,7 @@ module Paysuite
         	errors.push(k) unless (intent[k]).match operation.mapping[k]
         end
 
-        return errors
+        errors
       end
 
       def fill_optional_properties(opcode, intent)
@@ -105,7 +105,7 @@ module Paysuite
           end
         end
 
-        return intent
+        intent
       end
 
       def build_request_body(opcode, intent)
@@ -129,7 +129,7 @@ module Paysuite
           :'User-Agent' => @config.user_agent
         }
 
-        return headers
+        headers
       end
 
       def perform_request(opcode, intent)
