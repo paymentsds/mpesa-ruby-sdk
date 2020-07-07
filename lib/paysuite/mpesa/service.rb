@@ -136,6 +136,10 @@ module Paysuite
       	operation = OPERATION[opcode]
         body = build_request_body(operation, intent)
         headers = build_request_headers(operation, intent)
+        
+ 	puts operation
+ 	puts body
+ 	puts headers
       end
 
       def generate_access_token
