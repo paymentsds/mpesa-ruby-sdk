@@ -6,6 +6,7 @@ module Paysuite
       :WORD => /^\w+$/,
       :SERVICE_PROVIDEER => /^[0-9]{5,6}$/,
     }
+    
     OPERATIONS = {
       :C2B_PAYMENT => Operation.new do |operation|
         operation.method = "POST"

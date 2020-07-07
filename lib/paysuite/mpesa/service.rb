@@ -63,8 +63,9 @@ module Paysuite
         operation = OPERATIONS[code]
 
         errors = []
-        for key in intent.keys
-          errors.push(key) unless (intent[key]).match operation.mapping[key]
+
+        intent.each do |k, v|
+        	errors.push(k) unless (intent[k]).match operation.mapping[k]
         end
 
         return errors
@@ -107,8 +108,15 @@ module Paysuite
         return intent
       end
 
-      def build_request_body
-        
+      def build_request_body(opcode, intent)
+      	operation = OPERATION[opcode]
+	
+	body = {}
+	operation.mapping.each do |k, v|
+		body[v] = intent[k]
+	end
+	
+	body
       end
 
       def build_request_headers
@@ -125,8 +133,9 @@ module Paysuite
       end
 
       def perform_request(opcode, intent)
-        body = build_request_body(opcode, intent)
-        headers = build_request_headers(opcode, intent)
+      	operation = OPERATION[opcode]
+        body = build_request_body(operation, intent)
+        headers = build_request_headers(operation, intent)
       end
 
       def generate_access_token
