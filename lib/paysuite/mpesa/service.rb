@@ -5,7 +5,7 @@ module Paysuite
 
       def initialize
         @http_client = :client
-        @config = Configuration
+        @config = Paysuite::MPesa::Configuration.new
       end
 
       def handle_send(intent)
@@ -27,23 +27,28 @@ module Paysuite
 
       private
 
-      def handle_request(operation, intent)
-        data = fill_optional_properties(operation, intent)
+      def handle_request(opcode, intent)
+        data = fill_optional_properties(opcode, intent)
 
-        missing_properties = detect_missing_properties(operation, data)
-        return missing_properties if missing_properties.size == 0
-
-        errors = detect_errors(operation, data)
-        return errors if errors.size == 0
+        missing_properties = detect_missing_properties(opcode, data)
+        if missing_properties.size > 0
+        	return missing_properties 
+	end
+	
+        errors = detect_errors(opcode, data)
+        if errors.size > 0
+        	puts 'Errors'
+        	return errors 
+        end
 
         return perform_request(opcode, intent)
       end
 
       def detect_operation(intent)
         if intent.has_key? :to
-          case data[:to]
+          case intent[:to]
           when /^((00|\+)?258)?8[45][0-9]{7}$/
-            :C2B_PAYMENT
+            :B2C_PAYMENT
           when /^[0-9]{5,6}$/
             :B2B_PAYMENT
           end
@@ -54,25 +59,26 @@ module Paysuite
         # Should raise an exception
       end
 
-      def detect_missing_properties(code, intent)
-        operation = OPERATIONS[code]
+      def detect_missing_properties(opcode, intent)
+        operation = Paysuite::MPesa::OPERATIONS[opcode]
+
         missing = operation.requires - intent.keys
       end
 
-      def detect_errors(code, intent)
-        operation = OPERATIONS[code]
+      def detect_errors(opcode, intent)
+        operation =  Paysuite::MPesa::OPERATIONS[opcode]
 
         errors = []
 
         intent.each do |k, v|
-        	errors.push(k) unless (intent[k]).match operation.mapping[k]
+          errors.push(k) unless (intent[k]).match operation.validation[k]
         end
 
         errors
       end
 
       def fill_optional_properties(opcode, intent)
-        operation = OPERATION[opcode]
+        operation = Paysuite::MPesa::OPERATIONS[opcode]
 
         case opcode
         when :C2B_PAYMENT
@@ -109,11 +115,11 @@ module Paysuite
       end
 
       def build_request_body(opcode, intent)
-      	operation = OPERATION[opcode]
+      	operation = Paysuite::MPesa::OPERATIONS[opcode]
 	
 	body = {}
 	operation.mapping.each do |k, v|
-		body[v] = intent[k]
+	  body[v] = intent[k]
 	end
 	
 	body
@@ -133,9 +139,11 @@ module Paysuite
       end
 
       def perform_request(opcode, intent)
-      	operation = OPERATION[opcode]
-        body = build_request_body(operation, intent)
-        headers = build_request_headers(operation, intent)
+      	puts 'Performing'
+        body = build_request_body(opcode, intent)
+        headers = build_request_headers
+        
+        operation = Paysuite::MPesa::OPERATIONS[opcode]
         
  	puts operation
  	puts body

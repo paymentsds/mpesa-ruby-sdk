@@ -4,7 +4,7 @@ module Paysuite
       :PHONE_NUMBER => /^((00|\+)?(258))?8[45][0-9]{7}$/,
       :MONEY_AMOUNT => /^[1-9][0-9]*(\.[0-9]+)?$/,
       :WORD => /^\w+$/,
-      :SERVICE_PROVIDEER => /^[0-9]{5,6}$/,
+      :SERVICE_PROVIDER => /^[0-9]{5,6}$/,
     }
     
     OPERATIONS = {
@@ -20,21 +20,21 @@ module Paysuite
           transaction: "input_TransactionReference",
         }
         operation.validation = {
-          to: PATTERNS[:SERVICE_PROVIDEER],
+          to: PATTERNS[:SERVICE_PROVIDER],
           from: PATTERNS[:PHONE_NUMBER],
           amount: PATTERNS[:MONEY_AMOUNT],
           reference: PATTERNS[:WORD],
           transaction: PATTERNS[:WORD],
         }
         operation.requires = [
-          "to",
-          "from",
-          "amount",
-          "reference",
-          "transaction",
+          :to,
+          :from,
+          :amount,
+          :reference,
+          :transaction,
         ]
         operation.optional = [
-          "to",
+          :to,
         ]
       end,
 
@@ -43,28 +43,28 @@ module Paysuite
         operation.port = "18352"
         operation.path = "/ipg/v1x/c2bPayment/singleStage"
         operation.mapping = {
-          to: "input_ServiceProviderCode",
-          from: "input_CustomerMSISDN",
+          to: "input_CustomerMSISDN",
+          from: "input_ServiceProviderCode",
           amount: "input_Amount",
           reference: "input_ThirdPartyReference",
           transaction: "input_TransactionReference",
         }
         operation.validation = {
-          to: "",
-          from: "",
-          amount: "",
-          reference: "",
-          transaction: "",
+          to: PATTERNS[:PHONE_NUMBER],
+          from: PATTERNS[:SERVICE_PROVIDER],
+          amount:  PATTERNS[:MONEY_AMOUNT],
+          reference: PATTERNS[:WORD],
+          transaction: PATTERNS[:WORD],
         }
         operation.requires = [
-          "to",
-          "from",
-          "amount",
-          "reference",
-          "transaction",
+          :to,
+          :from,
+          :amount,
+          :reference,
+          :transaction,
         ]
         operation.optional = [
-          "to",
+          :from,
         ]
       end,
 
@@ -80,21 +80,21 @@ module Paysuite
           transaction: "input_TransactionReference",
         }
         operation.validation = {
-          to: "",
-          from: "",
-          amount: "",
-          reference: "",
-          transaction: "",
+          to: PATTERNS[:SERVICE_PROVIDER],
+          from: PATTERNS[:SERVICE_PROVIDER],
+          amount: PATTERNS[:MONEY_AMOUNT],
+          reference: PATTERNS[:WORD],
+          transaction: PATTERNS[:WORD],
         }
         operation.requires = [
-          "to",
-          "from",
-          "amount",
-          "reference",
-          "transaction",
+          :to,
+          :from,
+          :amount,
+          :reference,
+          :transaction,
         ]
         operation.optional = [
-          "to",
+          :from,
         ]
       end,
 
@@ -110,21 +110,23 @@ module Paysuite
           transaction: "input_TransactionReference",
         }
         operation.validation = {
-          to: "",
-          from: "",
-          amount: "",
-          reference: "",
-          transaction: "",
+          to: PATTERNS[:SERVICE_PROVIDER],
+          from: PATTERNS[:SERVICE_PROVIDER],
+          amount: PATTERNS[:MONEY_AMOUNT],
+          reference: PATTERNS[:WORD],
+          transaction: PATTERNS[:WORD],
+          initiator_identifier: PATTERNS[:SERVICE_PROVIDER],
+          security_credential: PATTERNS[:WORD]
         }
         operation.requires = [
-          "to",
-          "from",
-          "amount",
-          "reference",
-          "transaction",
+          :to,
+          :from,
+          :amount,
+          :reference,
+          :transaction,
         ]
         operation.optional = [
-          "to",
+          :to,
         ]
       end,
 
@@ -133,28 +135,22 @@ module Paysuite
         operation.port = "18353"
         operation.path = "/ipg/v1x/queryTransactionStatus"
         operation.mapping = {
-          reference: "input_QueryReference",
-          conversation: "input_QueryReference",
-          transaction: "input_QueryReference",
+          query: "input_QueryReference",
           from: "input_ServiceProviderCode",
-          application: "input_ThirdPartyReference",
+          reference: "input_ThirdPartyReference",
         }
         operation.validation = {
-          to: "",
-          from: "",
-          amount: "",
-          reference: "",
-          transaction: "",
+          query: PATTERNS[:WORD],
+          reference: PATTERNS[:WORD],
+          from: PATTERNS[:SERVICE_PROVIDER]
         }
         operation.requires = [
-          "to",
-          "from",
-          "amount",
-          "reference",
-          "transaction",
+          :query,
+          :reference,
+          :from,
         ]
         operation.optional = [
-          "to",
+          :from,
         ]
       end,
     }

@@ -1,5 +1,5 @@
 module Paysuite
-  module Mpesa
+  module MPesa
     VERSION = "0.1.0"
   end
 end

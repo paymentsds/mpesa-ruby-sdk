@@ -2,13 +2,13 @@ module Paysuite
   module MPesa
     class Client
       def initialize
-        @service = Paysuite::MPesa::Service.new
+        @service = Service.new
 
-        yield(@service) if block_given?
+        yield(@service.config) if block_given?
       end
 
       def send(intent)
-        @service.handle_send(inent)
+        @service.handle_send(intent)
       end
 
       def receive(intent)
