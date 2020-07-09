@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Paysuite
   module MPesa
     class Service
@@ -21,7 +23,7 @@ module Paysuite
         handle_request(:REVERSAL, intent)
       end
 
-      def handle_query(intent)
+      def handle_query(_intent)
         handle_request(:QUERY_TRANSACTION_STATUS, ntent)
       end
 
@@ -31,21 +33,19 @@ module Paysuite
         data = fill_optional_properties(opcode, intent)
 
         missing_properties = detect_missing_properties(opcode, data)
-        if missing_properties.size > 0
-        	return missing_properties 
-	end
-	
+        return missing_properties unless missing_properties.empty?
+
         errors = detect_errors(opcode, data)
-        if errors.size > 0
-        	puts 'Errors'
-        	return errors 
+        unless errors.empty?
+          puts 'Errors'
+          return errors
         end
 
-        return perform_request(opcode, intent)
+        perform_request(opcode, intent)
       end
 
       def detect_operation(intent)
-        if intent.has_key? :to
+        if intent.key? :to
           case intent[:to]
           when /^((00|\+)?258)?8[45][0-9]{7}$/
             :B2C_PAYMENT
@@ -66,11 +66,11 @@ module Paysuite
       end
 
       def detect_errors(opcode, intent)
-        operation =  Paysuite::MPesa::OPERATIONS[opcode]
+        operation = Paysuite::MPesa::OPERATIONS[opcode]
 
         errors = []
 
-        intent.each do |k, v|
+        intent.each do |k, _v|
           errors.push(k) unless (intent[k]).match operation.validation[k]
         end
 
@@ -82,72 +82,62 @@ module Paysuite
 
         case opcode
         when :C2B_PAYMENT
-          if intent.has_key? :to and @config.service_provider_code != nil
-            intent[:to] = @config.service_provider_code
-          end
+          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
         when :B2B_PAYMENT
-          if intent.has_key? :to and @config.service_provider_code != nil
-            intent[:to] = @config.service_provider_code
-          end
+          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
         when :B2C_PAYMENT
-          if intent.has_key? :from and @config.service_provider_code != nil
-            intent[:from] = @config.service_provider_code
-          end
+          intent[:from] = @config.service_provider_code if intent.key?(:from) && !@config.service_provider_code.nil?
         when :REVERSAL
-          if intent.has_key? :to and @config.service_provider_code != nil
-            intent[:to] = @config.service_provider_code
-          end
+          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
 
-          if intent.has_key? :initiator_identifier and @config.initiator_identifier != nil
+          if intent.key?(:initiator_identifier) && !@config.initiator_identifier.nil?
             intent[:initiator_identifier] = @config.initiator_identifier
           end
 
-          if intent.has_key? :security_credential and @config.security_credential != nil
+          if intent.key?(:security_credential) && !@config.security_credential.nil?
             intent[:security_credential] = @config.security_credential
           end
         when :QUERY_TRANSACTION_STATUS
-          if intent.has_key? :to and @config.service_provider_code != nil
-            intent[:to] = @config.service_provider_code
-          end
+          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
         end
 
         intent
       end
 
       def build_request_body(opcode, intent)
-      	operation = Paysuite::MPesa::OPERATIONS[opcode]
-	
-	body = {}
-	operation.mapping.each do |k, v|
-	  body[v] = intent[k]
-	end
-	
-	body
+        operation = Paysuite::MPesa::OPERATIONS[opcode]
+
+        body = {}
+        operation.mapping.each do |k, v|
+          body[v] = intent[k]
+        end
+
+        body
       end
 
       def build_request_headers
         generate_access_token
 
         headers = {
-          :'Authorization' => 'Bearer ' + @config.auth,
-          :'Origin' => @config.origin,
-          :'Content-Type' => 'application/json',
-          :'User-Agent' => @config.user_agent
+          'Authorization': 'Bearer ' + @config.auth,
+          'Origin': @config.origin,
+          'Content-Type': 'application/json',
+          'User-Agent': @config.user_agent
         }
 
         headers
       end
 
       def perform_request(opcode, intent)
-      	puts 'Performing'
+        puts 'Performing'
         body = build_request_body(opcode, intent)
         headers = build_request_headers
-        
+
         operation = Paysuite::MPesa::OPERATIONS[opcode]
-        
- 	puts operation
- 	puts body
- 	puts headers
+
+        puts operation
+        puts body
+        puts headers
       end
 
       def generate_access_token

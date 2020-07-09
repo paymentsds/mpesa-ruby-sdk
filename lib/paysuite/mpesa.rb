@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'mpesa/version'
 require_relative 'mpesa/operation'
 require_relative 'mpesa/constants'
