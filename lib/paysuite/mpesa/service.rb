@@ -6,7 +6,6 @@ module Paysuite
       attr_accessor :config
 
       def initialize
-        @http_client = :client
         @config = Paysuite::MPesa::Configuration.new
       end
 
@@ -62,7 +61,7 @@ module Paysuite
       def detect_missing_properties(opcode, intent)
         operation = Paysuite::MPesa::OPERATIONS[opcode]
 
-        missing = operation.requires - intent.keys
+        operation.requires - intent.keys
       end
 
       def detect_errors(opcode, intent)
@@ -78,8 +77,6 @@ module Paysuite
       end
 
       def fill_optional_properties(opcode, intent)
-        operation = Paysuite::MPesa::OPERATIONS[opcode]
-
         case opcode
         when :C2B_PAYMENT
           intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
@@ -134,10 +131,6 @@ module Paysuite
         headers = build_request_headers
 
         operation = Paysuite::MPesa::OPERATIONS[opcode]
-
-        puts operation
-        puts body
-        puts headers
       end
 
       def generate_access_token
