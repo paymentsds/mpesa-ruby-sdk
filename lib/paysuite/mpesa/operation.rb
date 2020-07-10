@@ -15,6 +15,14 @@ module Paysuite
       def initialize
         yield(self) if block_given?
       end
+
+      def valid?
+        method_valid = ['get', 'post'].include? @method
+        port_valid = @port.to_s.match? /^[0-9]{1,5}$/
+        requires_is_array = @requires.is_a? Array
+
+        method_valid && port_valid && requires_is_array
+      end
     end
   end
 end
