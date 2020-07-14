@@ -10,6 +10,5 @@ require_relative 'mpesa/client'
 module Paysuite
   module MPesa
     class Error < StandardError; end
-    # Your code goes here...
   end
 end

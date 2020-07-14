@@ -5,7 +5,6 @@ module Paysuite
     class Client
       def initialize
         @service = Service.new
-
         yield(@service.config) if block_given?
       end
 

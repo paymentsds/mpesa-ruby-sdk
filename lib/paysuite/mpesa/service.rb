@@ -116,7 +116,7 @@ module Paysuite
         generate_access_token
 
         headers = {
-          'Authorization': 'Bearer ' + @config.auth,
+          'Authorization': "Bearer #{@config.auth}",
           'Origin': @config.origin,
           'Content-Type': 'application/json',
           'User-Agent': @config.user_agent
@@ -126,11 +126,11 @@ module Paysuite
       end
 
       def perform_request(opcode, intent)
-        puts 'Performing'
         body = build_request_body(opcode, intent)
         headers = build_request_headers
 
         operation = Paysuite::MPesa::OPERATIONS[opcode]
+
       end
 
       def generate_access_token
