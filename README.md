@@ -1,4 +1,4 @@
-# MPesa Ruby SDK
+# MPesa SDK for Ruby
 
 MPesa Ruby SDK is an unofficial library to help developers integrating every [MPesa](https://developer.mpesa.vm.co.mz) operations to their Ruby applications.
 
