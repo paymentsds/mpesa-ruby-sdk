@@ -1,6 +1,6 @@
 # MPesa Ruby SDK
 
-Ruby client for the [Vodacom M-Pesa API](https://developers.mpesa.vm.co.mz).
+MPesa Ruby SDK is an unofficial library to help developers integrating every [MPesa](https://developer.mpesa.vm.co.mz) operations to their Ruby applications.
 
 ## Contents
 
