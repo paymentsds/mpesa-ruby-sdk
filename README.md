@@ -50,6 +50,7 @@ M-Pesa SDK for Ruby is an unofficial library aiming to help businesses integrati
 
 ```ruby
 require 'paymentsds/mpesa'
+
 client = Paymentsds::MPesa::Client.new do |config|
    config.api_key = '<REPLACE>'               # API Key
    config.public_key = '<REPLACE>'            # Public Key
