@@ -105,6 +105,33 @@ end
 
 ### Send Money to a Business Account <a name="#usage/scenario-4"></a>
 
+```ruby
+require 'paymentsds/mpesa'
+
+client = Paymentsds::MPesa::Client.new do |config|
+   config.api_key = '<REPLACE>'               # API Key
+   config.public_key = '<REPLACE>'            # Public Key
+   config.service_provider_code = '<REPLACE>' # input_ServiceProviderCode
+end
+
+begin
+   payment_data = {
+      to: '979797',            # input_ReceiverPartyCode
+      reference: '11114',      # input_ThirdPartyReference
+      transaction: 'T12344CC', # input_TransactionReference
+      amount: '10'             # input_Amount
+   }
+
+   result = client.send(payment_data)
+
+   if result.success?
+      puts result.data
+   end
+rescue
+   puts 'Operation failed'
+end
+```
+
 ### Revert a Transaction <a name="#usage/scenario-5"></a>
 
 ### Query the Status of a Transaction <a name="#usage/scenario-6"></a>
