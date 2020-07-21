@@ -48,6 +48,31 @@ M-Pesa SDK for Ruby is an unofficial library aiming to help businesses integrati
 
 ### Receive Money from a Mobile Account <a name="#usage/scenario-2"></a>
 
+```ruby
+require 'paymentsds/mpesa'
+client = Paymentsds::MPesa::Client.new do |config|
+   config.api_key = '<REPLACE>'               # API Key
+   config.public_key = '<REPLACE>'            # Public Key
+   config.service_provider_code = '<REPLACE>' # input_ServiceProviderCode
+end
+
+begin
+   payment_data = {
+      :from '841234567',
+      :reference '11114',
+      :transaction 'T12344CC',
+      :amount '10'
+   }
+
+   result = client.send(payment_data)
+
+   if result.success?
+      puts result.data
+   end
+rescue
+   puts 'Operation failed'
+end
+```
 ### Send Money to a Mobile Account <a name="#usage/scenario-3"></a>
 
 ### Send Money to a Business Account <a name="#usage/scenario-4"></a>
