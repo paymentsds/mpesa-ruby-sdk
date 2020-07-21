@@ -65,7 +65,7 @@ begin
       :amount '10'             # input_Amount
    }
 
-   result = client.send(payment_data)
+   result = client.receive(payment_data)
 
    if result.success?
       puts result.data
