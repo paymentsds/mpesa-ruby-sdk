@@ -58,10 +58,10 @@ end
 
 begin
    payment_data = {
-      :from '841234567',
-      :reference '11114',
-      :transaction 'T12344CC',
-      :amount '10'
+      :from '841234567',       # input_CustomerMSISDN
+      :reference '11114',      # input_ThirdPartyReference
+      :transaction 'T12344CC', # input_TransactionReference
+      :amount '10'             # input_Amount
    }
 
    result = client.send(payment_data)
