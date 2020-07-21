@@ -59,10 +59,10 @@ end
 
 begin
    payment_data = {
-      :from '841234567',       # input_CustomerMSISDN
-      :reference '11114',      # input_ThirdPartyReference
-      :transaction 'T12344CC', # input_TransactionReference
-      :amount '10'             # input_Amount
+      from: '841234567',       # input_CustomerMSISDN
+      reference: '11114',      # input_ThirdPartyReference
+      transaction: 'T12344CC', # input_TransactionReference
+      amount: '10'             # input_Amount
    }
 
    result = client.receive(payment_data)
