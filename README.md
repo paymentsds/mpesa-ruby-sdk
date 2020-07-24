@@ -15,8 +15,8 @@ M-Pesa SDK for Ruby is an unofficial library aiming to help businesses integrati
    1. [Examples](#usage/scenario-6)
 1. [Prerequisites](#prerequisites)
 1. [Installation](#installation)
-   1. [Installation Scenario 1](#installation/scenario-1)
-   1. [Installation Scenario 2](#installation/scenario-2)
+   1. [Using RubyGems](#installation/scenario-1)
+   1. [Using Bundler](#installation/scenario-2)
    1. [Installation Scenario 3](#installation/scenario-3)
    1. [Installation Scenario 4](#installation/scenario-4)
 1. [Configuration](#configuration)
@@ -174,9 +174,18 @@ end
 
 ## Installation <a name="installation"></a>
 
-### Installation Scenario 1 <a name="installation/scenario-1"></a>
+### Using RubyGems <a name="installation/scenario-1"></a>
 
-### Installation Scenario 2 <a name="installation/scenario-2"></a>
+```bash
+gem install paymentsds-mpesa
+```
+
+### Using Bundler <a name="installation/scenario-2"></a>
+
+```ruby
+#Gemfile
+gem 'paymentsds-mpesa'
+```
 
 ### Installation Scenario 3 <a name="installation/scenario-3"></a>
 
