@@ -206,10 +206,13 @@ gem 'paymentsds-mpesa'
 - [Faraday](https://github.com/lostisland/faraday)
 - [OpenSSL](https://github.com/ruby/openssl)
 
+
 #### Development Dependencies
 
 - [RSpec](https://github.com/rspec/rspec)
 - [Rake](https://github.com/ruby/rake)
+- [RuboCop](https://github.com/rubocop-hq/rubocop)
+- [Overcommit](https://github.com/sds/overcommit)
 
 ### Friends <a name="related-projects/friends"></a>
 
