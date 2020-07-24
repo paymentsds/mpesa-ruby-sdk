@@ -168,6 +168,10 @@ end
 
 ## Prerequisites <a name="prerequisites"></a>
 
+- [Ruby 2.5+](https://www.ruby-lang.org)
+- [RubyGems](https://rubygems.org)
+- [Bundler](https://bundler.io)
+
 ## Installation <a name="installation"></a>
 
 ### Installation Scenario 1 <a name="installation/scenario-1"></a>
