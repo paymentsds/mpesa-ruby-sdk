@@ -207,10 +207,8 @@ gem 'paymentsds-mpesa'
 
 #### Development Dependencies
 
-- [Dependency 1](https://github.com/<username>/<project>)
-- [Dependency 2](https://github.com/<username>/<project>)
-- [Dependency 3](https://github.com/<username>/<project>)
-- [Dependency 4](https://github.com/<username>/<project>)
+- [RSpec]https://github.com/rspec/rspec)
+- [Rake](https://github.com/ruby/rake)
 
 ### Friends <a name="related-projects/friends"></a>
 
