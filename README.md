@@ -204,6 +204,7 @@ gem 'paymentsds-mpesa'
 #### Production Dependencies
 
 - [Faraday](https://github.com/lostisland/faraday)
+- [OpenSSL](https://github.com/ruby/openssl)
 
 #### Development Dependencies
 
