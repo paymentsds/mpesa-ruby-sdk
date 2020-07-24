@@ -203,10 +203,7 @@ gem 'paymentsds-mpesa'
 
 #### Production Dependencies
 
-- [Dependency 1](https://github.com/<username>/<project>)
-- [Dependency 2](https://github.com/<username>/<project>)
-- [Dependency 3](https://github.com/<username>/<project>)
-- [Dependency 4](https://github.com/<username>/<project>)
+- [Faraday](https://github.com/lostisland/faraday)
 
 #### Development Dependencies
 
