@@ -207,7 +207,7 @@ gem 'paymentsds-mpesa'
 
 #### Development Dependencies
 
-- [RSpec]https://github.com/rspec/rspec)
+- [RSpec][https://github.com/rspec/rspec)
 - [Rake](https://github.com/ruby/rake)
 
 ### Friends <a name="related-projects/friends"></a>
