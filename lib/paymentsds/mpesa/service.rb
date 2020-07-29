@@ -167,6 +167,10 @@ module Paymentsds
       end
 
       def build_response(result)
+        if result.status >= 200 && result.status < 300
+          response = Response.new(result.success?, nil, result.data)
+        end
+        
       end
 
       def generate_access_token
