@@ -3,7 +3,7 @@
 require 'base64'
 require 'openssl'
 
-module Paysuite
+module Paymentsds
   module MPesa
     class Configuration
       attr_accessor :access_token

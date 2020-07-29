@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Paysuite
+module Paymentsds
   module MPesa
     PATTERNS = {
       PHONE_NUMBER: /^((00|\+)?(258))?8[45][0-9]{7}$/,

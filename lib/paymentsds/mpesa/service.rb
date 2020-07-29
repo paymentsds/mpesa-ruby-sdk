@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-module Paysuite
+module Paymentsds
   module MPesa
     class Service
       attr_accessor :config
 
       def initialize
-        @config = Paysuite::MPesa::Configuration.new
+        @config = Paymentsds::MPesa::Configuration.new
       end
 
       def handle_send(intent)
@@ -32,12 +32,13 @@ module Paysuite
         data = fill_optional_properties(opcode, intent)
 
         missing_properties = detect_missing_properties(opcode, data)
-        return missing_properties unless missing_properties.empty?
+        unless missing_properties.empty?
+          return Result.new(false, ErrorType::MISSING_PROPERTIES, missing_properties)
+        end
 
         errors = detect_errors(opcode, data)
         unless errors.empty?
-          puts 'Errors'
-          return errors
+          return Result.new(false, ErrorType::VALIDATION_ERROR, errors)
         end
 
         perform_request(opcode, intent)
@@ -59,13 +60,13 @@ module Paysuite
       end
 
       def detect_missing_properties(opcode, intent)
-        operation = Paysuite::MPesa::OPERATIONS[opcode]
+        operation = Paymentsds::MPesa::OPERATIONS[opcode]
 
-        operation.requires - intent.keys
+        operation[:required] - intent.keys
       end
 
       def detect_errors(opcode, intent)
-        operation = Paysuite::MPesa::OPERATIONS[opcode]
+        operation = Paymentsds::MPesa::OPERATIONS[opcode]
 
         errors = []
 
@@ -102,10 +103,10 @@ module Paysuite
       end
 
       def build_request_body(opcode, intent)
-        operation = Paysuite::MPesa::OPERATIONS[opcode]
+        operation = Paymentsds::MPesa::OPERATIONS[opcode]
 
         body = {}
-        operation.mapping.each do |k, v|
+        operation[:mapping].each do |k, v|
           body[v] = intent[k]
         end
 
@@ -126,11 +127,46 @@ module Paysuite
       end
 
       def perform_request(opcode, intent)
-        body = build_request_body(opcode, intent)
-        headers = build_request_headers
+        generate_access_token
+        
+        request_data = {
+          base_url: "#{@config.environment.scheme}://#{@config.environment.domain}:#{operation[:port]}",
+          url: operation[:path],
+          method: operation[:method],
+          path: operation[:path],
+          headers: build_request_headers,
+          timeout: @config.timeout * 1000,
+          body: build_request_body(opcode, intent)
+        }
 
-        operation = Paysuite::MPesa::OPERATIONS[opcode]
+        http_client = Faraday::Connection.new do |client|
+          client.url = "#{request_data[:base_url]}/#{request_data[:path]}"
+          client.headers = request_data[:headers]
+          client.options.timeout = request_data.timeout
+        end
 
+        case operation[:method]
+        
+        when :get
+          response = http_client.get do |req|
+            req.params = request_data.body
+          end
+
+        when :post
+          response = http_client.post do |req|
+            req.body = request_data.body
+          end
+
+        when :put
+          response = http_client.put do |req|
+            req.body = request_data.body
+          end
+        end
+
+        bulid_response(response)
+      end
+
+      def build_response(result)
       end
 
       def generate_access_token

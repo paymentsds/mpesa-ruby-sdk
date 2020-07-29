@@ -1,7 +1,7 @@
-RSpec.describe Paysuite::MPesa::Operation do
+RSpec.describe Paymentsds::MPesa::Operation do
   describe '#valid?' do
     it 'should not be valid' do
-      operation = Paysuite::MPesa::Operation.new do |o|
+      operation = Paymentsds::MPesa::Operation.new do |o|
         o.method = 'put'
       end
 
@@ -9,7 +9,7 @@ RSpec.describe Paysuite::MPesa::Operation do
     end
 
     it 'should be valid' do
-      operation = Paysuite::MPesa::Operation.new do |o|
+      operation = Paymentsds::MPesa::Operation.new do |o|
         o.method = 'post'
         o.port = 1456
         o.requires = [

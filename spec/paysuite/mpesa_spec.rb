@@ -1,5 +1,5 @@
-RSpec.describe Paysuite::MPesa do
+RSpec.describe Paymentsds::MPesa do
   it 'has a version number' do
-    expect(Paysuite::MPesa::VERSION).not_to be nil
+    expect(Paymentsds::MPesa::VERSION).not_to be nil
   end
 end

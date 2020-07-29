@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Paysuite
+module Paymentsds
   module MPesa
     class Operation
       attr_accessor :name
