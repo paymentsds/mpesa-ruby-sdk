@@ -2,6 +2,6 @@
 
 module Paymentsds
   module MPesa
-    VERSION = '0.1.0.pre.alpha.46'
+    VERSION = '0.1.0.pre.alpha.51'
   end
 end

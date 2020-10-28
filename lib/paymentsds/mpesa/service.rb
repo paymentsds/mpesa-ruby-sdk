@@ -40,12 +40,12 @@ module Paymentsds
 
         missing_properties = detect_missing_properties(opcode, data)
         unless missing_properties.empty?
-          return Paymentsds::MPesa::Result.new(false, Paymentsds::MPesa::ErrorType::MISSING_PROPERTIES, missing_properties)
+          raise Paymentsds::MPesa::ValidationError
         end
 
         errors = detect_errors(opcode, data)
         unless errors.empty?
-          return Paymentsds::MPesa::Result.new(false, Paymentsds::MPesa::ErrorType::VALIDATION_ERROR, errors)
+          raise Paymentsds::MPesa::ValidationError
         end
 
         perform_request(opcode, intent)
@@ -184,7 +184,18 @@ module Paymentsds
         when 200
           case result.body["output_ResponseCode"].to_sym
           when Paymentsds::MPesa::INS0
-            response = Paymentsds::MPesa::Result.new(result.success?, nil, result.body)
+            
+            response = Paymentsds::MPesa::Result.new do |r|
+              r.response = OpenStruct.new(
+                :code => result.body["output_ResponseCode"],
+                :desc => result.body["output_ResponseDesc"]
+              )
+              r.transaction_id = result.body["output_TransactionID"]
+              r.conversation_id = result.body["output_ConversationID"]
+              r.reference = result.body["output_ThirdPartyReference"]
+            end
+
+            return response
           else
             raise Paymentsds::MPesa::UnknownError
           end
@@ -192,7 +203,18 @@ module Paymentsds
         when 201
           case result.body["output_ResponseCode"].to_sym
           when Paymentsds::MPesa::INS0
-            response = Paymentsds::MPesa::Result.new(result.success?, nil, result.body)
+
+            response = Paymentsds::MPesa::Result.new do |r|
+              r.response = OpenStruct.new(
+                :code => result.body["output_ResponseCode"],
+                :desc => result.body["output_ResponseDesc"]
+              )
+              r.transaction_id = result.body["output_TransactionID"]
+              r.conversation_id = result.body["output_ConversationID"]
+              r.reference = result.body["output_ThirdPartyReference"]
+            end
+
+            return response
           else
             raise Paymentsds::MPesa::UnknownError
           end

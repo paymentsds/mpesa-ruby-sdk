@@ -1,17 +1,13 @@
 module Paymentsds
     module MPesa
         class Result
-            attr_reader :error
-            attr_reader :data
+            attr_accessor :response
+            attr_accessor :transaction_id
+            attr_accessor :conversation_id
+            attr_accessor :reference
 
-            def initialize(success, error, data)
-                @success = success
-                @error = error
-                @data = data
-            end
-
-            def success?
-                @success
+            def initialize
+                yield(self) if block_given?
             end
         end
     end
