@@ -28,4 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.9.0', '>= 3.9.0'
   spec.add_development_dependency 'overcommit', '~> 0.55.0', '>= 0.55.0'
   spec.add_development_dependency 'rubocop', '~> 0.88.0', '>= 0.88.0'
+  spec.add_development_dependency 'faraday_middleware'
 end
