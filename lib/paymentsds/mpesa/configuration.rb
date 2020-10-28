@@ -21,7 +21,20 @@ module Paymentsds
       attr_reader :auth
 
       def initialize
+        @user_agent = 'Paymentsds Ruby'
+        @origin = "*"
+        @verify_ssl = false
+        @timeout = 10
+        
         yield(self) if block_given?
+      end
+
+      def apply
+        @environment = if @environment == :production
+          Paymentsds::MPesa::Environment.new('https', 'api.vm.co.mz').freeze
+        else
+          Paymentsds::MPesa::Environment.new('https', 'api.sandbox.vm.co.mz').freeze
+        end
       end
 
       def generate_access_token

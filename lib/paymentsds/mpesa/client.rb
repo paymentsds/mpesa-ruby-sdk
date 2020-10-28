@@ -6,6 +6,7 @@ module Paymentsds
       def initialize
         @service = Service.new
         yield(@service.config) if block_given?
+        @service.apply
       end
 
       def send(intent)

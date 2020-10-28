@@ -1,4 +1,9 @@
 # frozen_string_literal: true
+require 'json'
+require 'faraday'
+require 'faraday_middleware'
+
+require_relative "errors/errors"
 
 module Paymentsds
   module MPesa
@@ -7,6 +12,10 @@ module Paymentsds
 
       def initialize
         @config = Paymentsds::MPesa::Configuration.new
+      end
+
+      def apply
+        @config.apply
       end
 
       def handle_send(intent)
@@ -33,12 +42,12 @@ module Paymentsds
 
         missing_properties = detect_missing_properties(opcode, data)
         unless missing_properties.empty?
-          return Result.new(false, ErrorType::MISSING_PROPERTIES, missing_properties)
+          return Paymentsds::MPesa::Result.new(false, Paymentsds::MPesa::ErrorType::MISSING_PROPERTIES, missing_properties)
         end
 
         errors = detect_errors(opcode, data)
         unless errors.empty?
-          return Result.new(false, ErrorType::VALIDATION_ERROR, errors)
+          return Paymentsds::MPesa::Result.new(false, Paymentsds::MPesa::ErrorType::VALIDATION_ERROR, errors)
         end
 
         perform_request(opcode, intent)
@@ -52,11 +61,9 @@ module Paymentsds
           when /^[0-9]{5,6}$/
             :B2B_PAYMENT
           end
-
-          # Should raise an exception
         end
 
-        # Should raise an exception
+        raise InvalidDestination
       end
 
       def detect_missing_properties(opcode, intent)
@@ -71,7 +78,7 @@ module Paymentsds
         errors = []
 
         intent.each do |k, _v|
-          errors.push(k) unless (intent[k]).match operation.validation[k]
+          errors.push(k) unless (intent[k]).match operation[:validation][k]
         end
 
         errors
@@ -80,15 +87,15 @@ module Paymentsds
       def fill_optional_properties(opcode, intent)
         case opcode
         when :C2B_PAYMENT
-          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
+          intent[:to] = @config.service_provider_code if !intent.key?(:to) && !@config.service_provider_code.nil?
         when :B2B_PAYMENT
-          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
+          intent[:to] = @config.service_provider_code if !intent.key?(:to) && !@config.service_provider_code.nil?
         when :B2C_PAYMENT
-          intent[:from] = @config.service_provider_code if intent.key?(:from) && !@config.service_provider_code.nil?
+          intent[:from] = @config.service_provider_code if !intent.key?(:from) && !@config.service_provider_code.nil?
         when :REVERSAL
-          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
+          intent[:to] = @config.service_provider_code if !intent.key?(:to) && !@config.service_provider_code.nil?
 
-          if intent.key?(:initiator_identifier) && !@config.initiator_identifier.nil?
+          if !intent.key?(:initiator_identifier) && !@config.initiator_identifier.nil?
             intent[:initiator_identifier] = @config.initiator_identifier
           end
 
@@ -96,7 +103,7 @@ module Paymentsds
             intent[:security_credential] = @config.security_credential
           end
         when :QUERY_TRANSACTION_STATUS
-          intent[:to] = @config.service_provider_code if intent.key?(:to) && !@config.service_provider_code.nil?
+          intent[:to] = @config.service_provider_code if !intent.key?(:to) && !@config.service_provider_code.nil?
         end
 
         intent
@@ -127,50 +134,173 @@ module Paymentsds
       end
 
       def perform_request(opcode, intent)
+        operation = Paymentsds::MPesa::OPERATIONS[opcode]
+
         generate_access_token
         
         request_data = {
-          base_url: "#{@config.environment.scheme}://#{@config.environment.domain}:#{operation[:port]}",
+          base_url: "#{@config.environment.to_url}:#{operation[:port]}",
           url: operation[:path],
           method: operation[:method],
           path: operation[:path],
           headers: build_request_headers,
-          timeout: @config.timeout * 1000,
+          timeout: @config.timeout,
           body: build_request_body(opcode, intent)
         }
 
-        http_client = Faraday::Connection.new do |client|
-          client.url = "#{request_data[:base_url]}/#{request_data[:path]}"
+        http_client = Faraday.new(url: request_data[:base_url]) do |client|
+          client.adapter Faraday.default_adapter
           client.headers = request_data[:headers]
-          client.options.timeout = request_data.timeout
+          client.response :json
         end
 
-        case operation[:method]
+        puts request_data[:base_url]
         
+        case operation[:method]    
         when :get
-          response = http_client.get do |req|
-            req.params = request_data.body
+          response = http_client.get(request_data[:path]) do |req|
+            req.params = request_data[:body]
+            req.options.timeout = request_data[:timeout]
           end
 
         when :post
-          response = http_client.post do |req|
-            req.body = request_data.body
+          response = http_client.post(request_data[:path]) do |req|
+            req.body = request_data[:body].to_json
+            req.options.timeout = request_data[:timeout]
           end
 
         when :put
-          response = http_client.put do |req|
-            req.body = request_data.body
+          response = http_client.put(request_data[:path]) do |req|
+            req.body = request_data[:body].to_json
+            req.options.timeout = request_data[:timeout]
           end
         end
 
-        bulid_response(response)
+        build_response(response)
       end
 
       def build_response(result)
-        if result.status >= 200 && result.status < 300
-          response = Response.new(result.success?, nil, result.data)
-        end
-        
+
+        case result.status
+        when 200
+          case result.body[:output_ResponseCode]
+          when Paymentsds::MPesa::INS0
+            response = Paymentsds::MPesa::Result.new(result.success?, nil, result.body)
+          else
+            raise UnknownError
+          end
+
+        when 201
+          case result.body[:output_ResponseCode]
+          when Paymentsds::MPesa::INS0
+            response = Paymentsds::MPesa::Result.new(result.success?, nil, result.body)
+          else
+            raise UnknownError
+          end
+
+        when 400
+          case result.body[:output_ResponseCode]
+          when Paymentsds::MPesa::INS13
+            raise InvalidShortcodeError
+          when Paymentsds::MPesa::INS14
+            raise InvalidReferenceError
+          when Paymentsds::MPesa::INS15
+            raise InvalidAmountError
+          when Paymentsds::MPesa::INS17
+            raise InvalidTransactionReferenceError
+          when Paymentsds::MPesa::INS18
+            raise InvalidTransactionIdError
+          when Paymentsds::MPesa::INS19
+            raise InvalidThirdPartyReferenceError
+          when Paymentsds::MPesa::INS20
+            raise InvalidMissingPropertiesError
+          when Paymentsds::MPesa::INS21
+            raise ValidationError
+          when Paymentsds::MPesa::INS22
+            raise InvalidOperationPartError
+          when Paymentsds::MPesa::INS23
+            raise UnknownStatusError
+          when Paymentsds::MPesa::INS24
+            raise InvalidInitiatorIdentifierError
+          when Paymentsds::MPesa::INS25
+            raise InvalidSecurityCredentialError
+          when Paymentsds::MPesa::INS993
+            raise DirectDebtMissingError
+          when Paymentsds::MPesa::INS994
+            raise DuplicatedDirectDebtError
+          when Paymentsds::MPesa::INS995
+            raise ProfileProblemsError
+          when Paymentsds::MPesa::INS996
+            raise InactiveAccountError
+          when Paymentsds::MPesa::INS997
+            raise InvalidLanguageCodeError
+          when Paymentsds::MPesa::INS998
+            raise InvalidMarketError
+          when Paymentsds::MPesa::INS2001
+            raise InitiatorAuthenticationError
+          when Paymentsds::MPesa::INS2002
+            raise InvalidReceiverError
+          when Paymentsds::MPesa::INS2051
+            raise InvalidMSISDNError
+          when Paymentsds::MPesa::INS2057
+            raise InvalidLanguageCodeError
+          else
+            raise UnknownError
+          end
+          
+        when 401
+          case result.body[:output_ResponseCode] 
+          when Paymentsds::MPesa::INS5
+            raise TransactionCancelledError
+          when Paymentsds::MPesa::INS6
+            raise TransactionFailedError
+          else
+            raise UnknownError
+          end
+      
+        when 408
+          case result.body[:output_ResponseCode] 
+          when Paymentsds::MPesa::INS9
+            raise RequestTimeoutError
+          else
+            raise UnknownError
+          end
+
+        when 409
+          case result.body[:output_ResponseCode] 
+          when Paymentsds::MPesa::INS10
+            raise DuplicateTransactionError
+          else
+            raise UnknownError
+          end
+
+        when 422
+          case result.body[:output_ResponseCode] 
+          when Paymentsds::MPesa::INS2006
+            raise InsufficientBalanceError
+          else
+            raise UnknownError
+          end
+
+        when 500
+          case result.body[:output_ResponseCode] 
+          when Paymentsds::MPesa::INS1
+            raise InternalError
+          else
+            raise UnknownError
+          end
+
+        when 503
+          case result.body[:output_ResponseCode] 
+          when Paymentsds::MPesa::INS16
+            raise UnavailableServerError
+          else
+            raise UnknownError
+          end
+
+        else
+          raise UnknownError
+        end        
       end
 
       def generate_access_token
