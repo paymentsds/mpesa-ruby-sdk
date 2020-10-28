@@ -45,15 +45,15 @@ module Paymentsds
         port: '18345',
         path: '/ipg/v1x/b2cPayment/',
         mapping: {
-          to: 'input_ServiceProviderCode',
-          from: 'input_CustomerMSISDN',
+          to: 'input_CustomerMSISDN',
+          from: 'input_ServiceProviderCode',
           amount: 'input_Amount',
           reference: 'input_ThirdPartyReference',
           transaction: 'input_TransactionReference'
         },
         validation: {
-          to: PATTERNS[:SERVICE_PROVIDER],
-          from: PATTERNS[:PHONE_NUMBER],
+          to: PATTERNS[:PHONE_NUMBER],
+          from: PATTERNS[:SERVICE_PROVIDER],
           amount: PATTERNS[:MONEY_AMOUNT],
           reference: PATTERNS[:WORD],
           transaction: PATTERNS[:WORD]
@@ -83,7 +83,7 @@ module Paymentsds
         },
         validation: {
           to: PATTERNS[:SERVICE_PROVIDER],
-          from: PATTERNS[:PHONE_NUMBER],
+          from: PATTERNS[:SERVICE_PROVIDER],
           amount: PATTERNS[:MONEY_AMOUNT],
           reference: PATTERNS[:WORD],
           transaction: PATTERNS[:WORD]

@@ -3,8 +3,6 @@ require 'json'
 require 'faraday'
 require 'faraday_middleware'
 
-require_relative "errors/errors"
-
 module Paymentsds
   module MPesa
     class Service
@@ -57,13 +55,13 @@ module Paymentsds
         if intent.key? :to
           case intent[:to]
           when /^((00|\+)?258)?8[45][0-9]{7}$/
-            :B2C_PAYMENT
+            return :B2C_PAYMENT
           when /^[0-9]{5,6}$/
-            :B2B_PAYMENT
+            return :B2B_PAYMENT
           end
         end
 
-        raise InvalidDestination
+        raise Paymentsds::MPesa::InvalidDestination
       end
 
       def detect_missing_properties(opcode, intent)
@@ -180,126 +178,127 @@ module Paymentsds
       end
 
       def build_response(result)
+        puts result.body.inspect
 
         case result.status
         when 200
-          case result.body[:output_ResponseCode]
+          case result.body["output_ResponseCode"].to_sym
           when Paymentsds::MPesa::INS0
             response = Paymentsds::MPesa::Result.new(result.success?, nil, result.body)
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         when 201
-          case result.body[:output_ResponseCode]
+          case result.body["output_ResponseCode"].to_sym
           when Paymentsds::MPesa::INS0
             response = Paymentsds::MPesa::Result.new(result.success?, nil, result.body)
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         when 400
-          case result.body[:output_ResponseCode]
+          case result.body["output_ResponseCode"].to_sym
           when Paymentsds::MPesa::INS13
-            raise InvalidShortcodeError
+            raise Paymentsds::MPesa::InvalidShortcodeError
           when Paymentsds::MPesa::INS14
-            raise InvalidReferenceError
+            raise Paymentsds::MPesa::InvalidReferenceError
           when Paymentsds::MPesa::INS15
-            raise InvalidAmountError
+            raise Paymentsds::MPesa::InvalidAmountError
           when Paymentsds::MPesa::INS17
-            raise InvalidTransactionReferenceError
+            raise Paymentsds::MPesa::InvalidTransactionReferenceError
           when Paymentsds::MPesa::INS18
-            raise InvalidTransactionIdError
+            raise Paymentsds::MPesa::InvalidTransactionIdError
           when Paymentsds::MPesa::INS19
-            raise InvalidThirdPartyReferenceError
+            raise Paymentsds::MPesa::InvalidThirdPartyReferenceError
           when Paymentsds::MPesa::INS20
-            raise InvalidMissingPropertiesError
+            raise Paymentsds::MPesa::InvalidMissingPropertiesError
           when Paymentsds::MPesa::INS21
-            raise ValidationError
+            raise Paymentsds::MPesa::ValidationError
           when Paymentsds::MPesa::INS22
-            raise InvalidOperationPartError
+            raise Paymentsds::MPesa::InvalidOperationPartError
           when Paymentsds::MPesa::INS23
-            raise UnknownStatusError
+            raise Paymentsds::MPesa::UnknownStatusError
           when Paymentsds::MPesa::INS24
-            raise InvalidInitiatorIdentifierError
+            raise Paymentsds::MPesa::InvalidInitiatorIdentifierError
           when Paymentsds::MPesa::INS25
-            raise InvalidSecurityCredentialError
+            raise Paymentsds::MPesa::InvalidSecurityCredentialError
           when Paymentsds::MPesa::INS993
-            raise DirectDebtMissingError
+            raise Paymentsds::MPesa::DirectDebtMissingError
           when Paymentsds::MPesa::INS994
-            raise DuplicatedDirectDebtError
+            raise Paymentsds::MPesa::DuplicatedDirectDebtError
           when Paymentsds::MPesa::INS995
-            raise ProfileProblemsError
+            raise Paymentsds::MPesa::ProfileProblemsError
           when Paymentsds::MPesa::INS996
-            raise InactiveAccountError
+            raise Paymentsds::MPesa::InactiveAccountError
           when Paymentsds::MPesa::INS997
-            raise InvalidLanguageCodeError
+            raise Paymentsds::MPesa::InvalidLanguageCodeError
           when Paymentsds::MPesa::INS998
-            raise InvalidMarketError
+            raise Paymentsds::MPesa::InvalidMarketError
           when Paymentsds::MPesa::INS2001
-            raise InitiatorAuthenticationError
+            raise Paymentsds::MPesa::InitiatorAuthenticationError
           when Paymentsds::MPesa::INS2002
-            raise InvalidReceiverError
+            raise Paymentsds::MPesa::InvalidReceiverError
           when Paymentsds::MPesa::INS2051
-            raise InvalidMSISDNError
+            raise Paymentsds::MPesa::InvalidMSISDNError
           when Paymentsds::MPesa::INS2057
-            raise InvalidLanguageCodeError
+            raise Paymentsds::MPesa::InvalidLanguageCodeError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
           
         when 401
-          case result.body[:output_ResponseCode] 
+          case result.body["output_ResponseCode"].to_sym 
           when Paymentsds::MPesa::INS5
-            raise TransactionCancelledError
+            raise Paymentsds::MPesa::TransactionCancelledError
           when Paymentsds::MPesa::INS6
-            raise TransactionFailedError
+            raise Paymentsds::MPesa::TransactionFailedError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
       
         when 408
-          case result.body[:output_ResponseCode] 
+          case result.body["output_ResponseCode"].to_sym 
           when Paymentsds::MPesa::INS9
-            raise RequestTimeoutError
+            raise Paymentsds::MPesa::RequestTimeoutError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         when 409
-          case result.body[:output_ResponseCode] 
+          case result.body["output_ResponseCode"].to_sym 
           when Paymentsds::MPesa::INS10
-            raise DuplicateTransactionError
+            raise Paymentsds::MPesa::DuplicateDirectDebtError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         when 422
-          case result.body[:output_ResponseCode] 
+          case result.body["output_ResponseCode"].to_sym 
           when Paymentsds::MPesa::INS2006
-            raise InsufficientBalanceError
+            raise Paymentsds::MPesa::InsufficientBalanceError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         when 500
-          case result.body[:output_ResponseCode] 
+          case result.body["output_ResponseCode"].to_sym 
           when Paymentsds::MPesa::INS1
-            raise InternalError
+            raise Paymentsds::MPesa::InternalError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         when 503
-          case result.body[:output_ResponseCode] 
+          case result.body["output_ResponseCode"].to_sym 
           when Paymentsds::MPesa::INS16
-            raise UnavailableServerError
+            raise Paymentsds::MPesa::UnavailableServerError
           else
-            raise UnknownError
+            raise Paymentsds::MPesa::UnknownError
           end
 
         else
-          raise UnknownError
+          raise Paymentsds::MPesa::UnknownError
         end        
       end
 

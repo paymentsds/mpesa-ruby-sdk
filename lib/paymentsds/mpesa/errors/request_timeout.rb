@@ -1,7 +1,7 @@
 module Paymentsds
     module MPesa
-        class ProfileProblemsError < StandardError
-            def initialize(msg=Paymentsds::MPesa::PROFILE_PROBLEMS)
+        class RequestTimeoutError < StandardError
+            def initialize(msg=Paymentsds::MPesa::REQUEST_TIMEOUT)
                 super(msg)
             end
         end

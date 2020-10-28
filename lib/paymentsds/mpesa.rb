@@ -3,6 +3,8 @@
 require_relative 'mpesa/version'
 require_relative 'mpesa/operation'
 require_relative 'mpesa/constants'
+require_relative "mpesa/errors/constants"
+require_relative "mpesa/errors/errors"
 require_relative 'mpesa/environment'
 require_relative 'mpesa/configuration'
 require_relative 'mpesa/result'
