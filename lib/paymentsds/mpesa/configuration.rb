@@ -24,7 +24,7 @@ module Paymentsds
         @user_agent = 'Paymentsds Ruby'
         @origin = "*"
         @verify_ssl = false
-        @timeout = 10
+        @timeout = 1000
         
         yield(self) if block_given?
       end
