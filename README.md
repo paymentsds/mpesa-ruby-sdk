@@ -1,52 +1,79 @@
-# M-Pesa SDK for Ruby
+# Ruby M-Pesa SDK
 
-M-Pesa SDK for Ruby is an unofficial library aiming to help businesses integrating every [M-Pesa](https://developer.mpesa.vm.co.mz) operations to their Ruby applications.
 
-## Contents
+<p align="center"><a href="https://rubygems.org/gems/paymentsds-mpesa/"><img src="https://img.shields.io/gem/dt/paymentsds-mpesa" alt="Total Downloads"></a> <a href="https://rubygems.org/gems/paymentsds-mpesa/"><img src="https://img.shields.io/gem/v/paymentsds-mpesa?include_prereleases" alt="Latest Stable Version"></a> <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a></p>
 
-- [Features](#features)
-- [Usage](#usage)
-   - [Quickstart](#usage/scenario-1)
-   - [Receive Money from a Mobile Account](#usage/scenario-1)
-   - [Send Money to a Mobile Account](#usage/scenario-2)
-   - [Send Money to a Business Account](#usage/scenario-3)
-   - [Revert a Transaction](#usage/scenario-4)
-   - [Query the Status of a Transaction](#usage/scenario-5)
-   - [Examples](#usage/scenario-6)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-   - [Using RubyGems](#installation/scenario-1)
-   - [Using Bundler](#installation/scenario-2)
-   - [Installation Scenario 3](#installation/scenario-3)
-   - [Installation Scenario 4](#installation/scenario-4)
-- [Configuration](#configuration)
-   - [Configuration Scenario 1](#configuration/scenario-1)
-   - [Configuration Scenario 2](#configuration/scenario-2)
-   - [Configuration Scenario 3](#configuration/scenario-3)
-   - [Configuration Scenario 4](#configuration/scenario-4)
-- [Related Projects](#related-projects)
-   - [Dependencies](#related-projects/dependencies)
-   - [Friends](#related-projects/friends)
-   - [Alternatives](#related-projects/alternatives)
-- [Contributing](#contributing)
-- [Changelog](#changelog)
-- [Authors](#authors)
-- [Credits](#credits)
-- [License](#license)
+This is a library willing to help you to integrate the [Vodacom M-Pesa](https://developer.mpesa.vm.co.mz) operations to your application.
 
-## Features <a name="features"></a>
+<br>
 
-- Receive money from a mobile account to a business account
-- Send money from a business account to a mobile account
-- Send money from a business account to a another business account
-- Revert a transaction
-- Query the status of a transaction
+### Features
 
-## Usage <a name="usage"></a>
+Using this library, you can implement the following operations:
 
-### Quickstart <a name="#usage/scenario-1"></a>
+- Receive money from a mobile account to a business account (C2B)
+- Send money from a business account to a mobile account (B2C)
+- Send money from a business account to another business account (B2B)
+- Revert any of the transactions above mentioned
 
-### Receive Money from a Mobile Account <a name="#usage/scenario-2"></a>
+<br><br>
+
+## Requirements
+
+- Valid credentials obtained from the [Mpesa Developer](https://developer.mpesa.vm.co.mz) portal
+- Port 18352 open on your server (usually open on local env)
+- [Ruby 2.5+](https://www.ruby-lang.org)
+- [RubyGems](https://rubygems.org)
+- [Bundler](https://bundler.io)
+
+<br><br>
+
+### Production Dependencies
+
+- [Faraday](https://github.com/lostisland/faraday)
+- [OpenSSL](https://github.com/ruby/openssl)
+
+<br>
+
+### Development Dependencies
+
+- [RSpec](https://github.com/rspec/rspec)
+- [Rake](https://github.com/ruby/rake)
+- [RuboCop](https://github.com/rubocop-hq/rubocop)
+- [Overcommit](https://github.com/sds/overcommit)
+
+<br><br>
+
+
+## Installation
+
+<br>
+
+
+### Using RubyGems
+
+```bash
+gem install paymentsds-mpesa
+```
+
+<br>
+
+### Using Bundler
+```ruby
+#Gemfile
+gem 'paymentsds-mpesa'
+```
+
+<br><br>
+
+
+## Usage
+
+Using this SDK is very simple and fast, let us see some examples:
+
+<br>
+
+#### C2B Transaction (Receive money from mobile account)
 
 ```ruby
 require 'paymentsds/mpesa'
@@ -74,7 +101,10 @@ rescue
    puts 'Operation failed'
 end
 ```
-### Send Money to a Mobile Account <a name="#usage/scenario-3"></a>
+
+<br>
+
+#### B2C Transaction (Sending money to mobile account)
 
 ```ruby
 require 'paymentsds/mpesa'
@@ -103,7 +133,9 @@ rescue
 end
 ```
 
-### Send Money to a Business Account <a name="#usage/scenario-4"></a>
+<br>
+
+#### B2B Transaction (Sending money to business account)
 
 ```ruby
 require 'paymentsds/mpesa'
@@ -132,7 +164,10 @@ rescue
 end
 ```
 
-### Revert a Transaction <a name="#usage/scenario-5"></a>
+<br>
+
+
+#### Transaction Reversal
 
 ```ruby
 require 'paymentsds/mpesa'
@@ -162,100 +197,47 @@ rescue
 end
 ```
 
-### Query the Status of a Transaction <a name="#usage/scenario-6"></a>
+<br><br>
 
-### Examples <a name="usage/scenario-7"></a>
-
-## Prerequisites <a name="prerequisites"></a>
-
-- [Ruby 2.5+](https://www.ruby-lang.org)
-- [RubyGems](https://rubygems.org)
-- [Bundler](https://bundler.io)
-
-## Installation <a name="installation"></a>
-
-### Using RubyGems <a name="installation/scenario-1"></a>
-
-```bash
-gem install paymentsds-mpesa
-```
-
-### Using Bundler <a name="installation/scenario-2"></a>
-
-```ruby
-#Gemfile
-gem 'paymentsds-mpesa'
-```
-
-### Installation Scenario 3 <a name="installation/scenario-3"></a>
-
-## Configuration <a name="configuration"></a>
-
-### Configuration Scenario 1 <a name="configuration/scenario-1"></a>
-
-### Configuration Scenario 2 <a name="configuration/scenario-2"></a>
-
-### Configuration Scenario 3 <a name="configuration/scenario-3"></a>
-
-## Related Projects <a name="related-projects"></a>
-
-### Dependencies <a name="related-projects/dependencies"></a>
-
-#### Production Dependencies
-
-- [Faraday](https://github.com/lostisland/faraday)
-- [OpenSSL](https://github.com/ruby/openssl)
-
-
-#### Development Dependencies
-
-- [RSpec](https://github.com/rspec/rspec)
-- [Rake](https://github.com/ruby/rake)
-- [RuboCop](https://github.com/rubocop-hq/rubocop)
-- [Overcommit](https://github.com/sds/overcommit)
-
-### Friends <a name="related-projects/friends"></a>
+## Friends
 
 - [M-Pesa SDK for Javascript](https://github.com/paymentsds/mpesa-js-sdk)
-- [M-Pesa SDK for PHP](https://github.com/paymentsds/mpesa-php-sdk)
-- [M-Pesa SDK for Ruby](https://github.com/paymentsds/mpesa-ruby-sdk)
 - [M-Pesa SDK for Python](https://github.com/paymentsds/mpesa-python-sdk)
-
-### Alternatives <a name="related-projects/alternatives"></a>
-
-- [Alternative 1](https://github.com/<username>/<project>)
-- [Alternative 2](https://github.com/<username>/<project>)
-- [Alternative 3](https://github.com/<username>/<project>)
-- [Alternative 4](https://github.com/<username>/<project>)
+- [M-Pesa SDK for Java](https://github.com/paymentsds/mpesa-java-sdk)
+- [M-Pesa SDK for PHP](https://github.com/paymentsds/mpesa-php-sdk)
 
 
-### Inspiration
-
-- [rosariopfernandes/mpesa-node-api](https://github.com/abdulmueid/mpesa-php-api)
-- [karson/mpesa-php-sdk](https://github.com/karson/mpesa-php-sdk)
-- [codeonweekends/mpesa-php-sdk](https://github.com/codeonweekends/mpesa-php-sdk)
-- [abdulmueid/mpesa-php-api](https://github.com/abdulmueid/mpesa-php-api)
-- [realdm/mpesasdk](https://github.com/realdm/mpesasdk)
-
-
-## Contributing <a name="contributing"></a>
-
-## Changelog <a name="changelog"></a>
+<br><br>
 
 ## Authors <a name="authors"></a>
 
+- [Anísio Mandlate](https://github.com/AnisioMandlate)
 - [Edson Michaque](https://github.com/edsonmichaque)
+- [Elton Laice](https://github.com/eltonlaice)
 - [Nélio Macombo](https://github.com/neliomacombo)
 
-## Credits <a name="credits"></a>
 
-## License <a name="license"></a>
+<br><br>
 
-Copyright 2020 Anísio Mandlate, Edson Michaque, Elton Laice and Nélio Macombo
+## Contributing
+
+Thank you for considering contributing to this package. If you wish to do it, email us at [developers@paymentsds.org](mailto:developers@paymentsds.org) and we will get back to you as soon as possible.
+
+
+<br><br>
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability, please email us at [developers@paymentsds.org](mailto:developers@paymentsds.org) and we will address the issue with the needed urgency.
+
+<br><br>
+
+## License
+
+Copyright 2022 &copy; The PaymentsDS Team
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
-
